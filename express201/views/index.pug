@@ -1,0 +1,13 @@
+doctype html
+html   
+    head 
+        title This is  pug
+    body
+        h1 Rendered pug file!
+        div     
+            p A message 
+        div #{msg}
+        div !{html}
+        ul 
+            each country in countries
+                li=country.name + '--' + country.capital
