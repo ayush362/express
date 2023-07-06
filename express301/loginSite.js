@@ -17,11 +17,37 @@ app.use(cookieParser());
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'views'))
 
+app.use((req,res,next)=>{
+    if(req.query.msg='fail'){
+        res.locals.msg = `Sorry this username password combination does not exist`
+    }
+    else{
+        res.locals.msg = ``
+    }
+    next()
+})
+
+app.param('link',(req,res,next)=>{
+    console.log("params called ",link)
+    next()
+})
+// app.get('/story/1',(req,res,next)=>{
+//     res.send(`<h1>Story 1</h1>`)
+// })
+
+app.get('/story/:storyId/:link',(req,res,next)=>{
+    res.send(`<h1>Story ${req.params.storyId} -- ${req.params.link}</h1>`)
+})
+app.get('/story/:storyId/',(req,res,next)=>{
+    res.send(`<h1>Story ${req.params.storyId} </h1>`)
+})
+
 app.get('/',(req,res,next)=>{
     res.send("Sanity check!")
 })
 
 app.get('/login',(req,res,next)=>{
+    console.log(req.query)
     res.render('login')
 })
 
@@ -42,7 +68,7 @@ app.post('/process_login',(req,res,next)=>{
 
     }
     else{
-        res.redirect('/login?msg=fail')
+        res.redirect('/login?msg=fail&test=hello')
     }
 
     // res.json(req.body)
@@ -52,6 +78,21 @@ app.get('/welcome',(req,res,next)=>{
     res.render('welcome',{
         username: req.cookies.username
     })
+})
+
+app.get('/statement',(req,res,next)=>{
+    // res.sendFile(path.join(__dirname,'userStatements/BankStatementChequing.png'))
+    res.download(path.join(__dirname,'userStatements/BankStatementChequing.png'),'user.png',(error)=>{
+        // console.log('Error!')
+        if(error)
+        {
+            if(!res.headersSent)
+            {
+                res.redirect('/download/error')
+            }
+        }
+    })
+
 })
 
 app.get('/logout',(req,res,next)=>{
